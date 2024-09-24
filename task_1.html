@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AJAX Request Example</title>
+  <style>
+    #response {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fetch API Example</h1>
+  <button id="fetchBtn">Make AJAX Request</button>
+  <div id="response"></div>
+
+  <script>
+    document.getElementById("fetchBtn").addEventListener("click", function() {
+      const responseDiv = document.getElementById("response");
+
+      
+      const serverUrl = "https://your-server-url.com/api/data";
+
+      
+      fetch(serverUrl)
+        .then(response => {
+         
+          responseDiv.innerHTML = `Response Status: ${response.status}`;
+
+        
+          if (response.ok) {
+            responseDiv.innerHTML += "<br>Successful AJAX request";
+          } else {
+            responseDiv.innerHTML += "<br>Request failed, check internet connectivity.";
+          }
+        })
+        .catch(error => {
+          
+          responseDiv.innerHTML = "Request failed, check internet connectivity.";
+        });
+    });
+  </script>
+
+</body>
+</html>

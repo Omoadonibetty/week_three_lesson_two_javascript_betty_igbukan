@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Recipe Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+    #recipe-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px;
+    }
+    .recipe-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      width: 250px;
+      text-align: center;
+    }
+    .recipe-card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    #pagination {
+      display: flex;
+      justify-content: center;
+      margin: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    .active {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Food Recipes</h1>
+  <div id="recipe-container"></div>
+  
+  <div id="pagination">
+    <button id="prev-button" class="hidden">Previous</button>
+    <button id="next-button">Next</button>
+  </div>
+
+  <script>
+    const apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s='; // Base URL for API
+    let currentPage = 1;
+    const recipesPerPage = 6; 
+    let totalRecipes = 0;
+
+    function fetchRecipes() {
+      const searchQuery = ''; 
+      fetch(`${apiUrl}${searchQuery}`)
+        .then(response => response.json())
+        .then(data => {
+          totalRecipes = data.meals.length; 
+          displayRecipes(data.meals);
+          updatePaginationButtons();
+        })
+        .catch(error => {
+          console.error('Error fetching the recipes:', error);
+        });
+    }
+
+ 
+    function displayRecipes(recipes) {
+      const recipeContainer = document.getElementById('recipe-container');
+      recipeContainer.innerHTML = ''; 
+
+      const startIndex = (currentPage - 1) * recipesPerPage;
+      const endIndex = Math.min(startIndex + recipesPerPage, totalRecipes);
+      
+      for (let i = startIndex; i < endIndex; i++) {
+        const recipe = recipes[i];
+        const recipeCard = document.createElement('div');
+        recipeCard.classList.add('recipe-card');
+        recipeCard.innerHTML = `
+          <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+          <h2>${recipe.strMeal}</h2>
+          <p>${recipe.strInstructions.substring(0, 100)}...</p>
+          <a href="${recipe.strSource}" target="_blank">View Recipe</a>
+        `;
+        recipeContainer.appendChild(recipeCard);
+      }
+    }
+
+
+    function updatePaginationButtons() {
+      const prevButton = document.getElementById('prev-button');
+      const nextButton = document.getElementById('next-button');
+
+      prevButton.classList.toggle('hidden', currentPage === 1);
+      nextButton.classList.toggle('hidden', currentPage * recipesPerPage >= totalRecipes);
+    }
+
+    
+    document.getElementById('next-button').addEventListener('click', () => {
+      if (currentPage * recipesPerPage < totalRecipes) {
+        currentPage++;
+        fetchRecipes();
+      }
+    });
+
+    document.getElementById('prev-button').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        fetchRecipes();
+      }
+    });
+
+    
+    window.onload = function() {
+      fetchRecipes();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POST Request Example</title>
+  <style>
+    #request-status {
+      width: 100%;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: grey;
+      color: white;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bolowys POST Request Example</h1>
+  
+  <div id="request-status">Waiting for response...</div>
+
+  <script>
+   
+    function makePostRequest() {
+      
+      const url = 'https://your-server-url.com/api-endpoint'; // Replace with actual URL
+      const data = {
+        
+        name: "Betty Igbukan",
+        message: "Hello from the POST request!"
+      };
+
+      
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => {
+       
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request failed');
+        }
+      })
+      .then(result => {
+        
+        const statusDiv = document.getElementById('request-status');
+        statusDiv.innerHTML = 'Success! Your POST request was processed.';
+        statusDiv.style.backgroundColor = 'green';
+      })
+      .catch(error => {
+        
+        const statusDiv = document.getElementById('request-status');
+        statusDiv.innerHTML = 'Failed to process your request. Please try again.';
+        statusDiv.style.backgroundColor = 'red';
+      });
+    }
+
+    
+    window.onload = function() {
+      makePostRequest();
+    };
+  </script>
+</body>
+</html>

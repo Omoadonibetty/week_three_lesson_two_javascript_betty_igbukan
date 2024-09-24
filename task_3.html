@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Feed Pagination</title>
+  <style>
+    #news-container {
+      margin-top: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    #pagination {
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>News Feed</h1>
+  <div id="news-container"></div>
+  
+  <div id="pagination">
+    <button id="prev-button" class="hidden">Previous</button>
+    <button id="next-button">Next</button>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    const articlesPerPage = 10;
+    let totalArticles = 0;
+    let totalPages = 0;
+
+    
+    function fetchNews(page) {
+      const url = `https://your-news-url.com/api/news?page=${page}&limit=${articlesPerPage}`; // Replace with actual URL
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          totalArticles = data.total; // Assuming the API returns the total articles
+          totalPages = Math.ceil(totalArticles / articlesPerPage);
+
+          displayArticles(data.articles); // Assuming articles are in 'data.articles'
+          updatePaginationButtons();
+        })
+        .catch(error => {
+          console.error('Error fetching the news:', error);
+        });
+    }
+
+   
+    function displayArticles(articles) {
+      const newsContainer = document.getElementById('news-container');
+      newsContainer.innerHTML = ''; 
+
+      articles.forEach(article => {
+        const articleDiv = document.createElement('div');
+        articleDiv.innerHTML = `<h2>${article.title}</h2><p>${article.description}</p>`;
+        newsContainer.appendChild(articleDiv);
+      });
+    }
+
+    
+    function updatePaginationButtons() {
+      const prevButton = document.getElementById('prev-button');
+      const nextButton = document.getElementById('next-button');
+
+      prevButton.classList.toggle('hidden', currentPage === 1);
+      nextButton.classList.toggle('hidden', currentPage === totalPages);
+    }
+
+
+    document.getElementById('next-button').addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        fetchNews(currentPage);
+      }
+    });
+
+    document.getElementById('prev-button').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        fetchNews(currentPage);
+      }
+    });
+
+    
+    window.onload = function() {
+      fetchNews(currentPage);
+    };
+  </script>
+</body>
+</html>
