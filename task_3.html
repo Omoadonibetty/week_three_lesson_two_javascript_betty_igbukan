@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News Feed Pagination</title>
+  <title>Food Recipe Pagination</title>
   <style>
-    #news-container {
+    #recipe-container {
       margin-top: 20px;
     }
-    .hidden {
-      display: none;
+    .recipe-card {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .recipe-card img {
+      width: 100%;
+      height: auto;
     }
     #pagination {
       margin-top: 20px;
@@ -21,8 +27,8 @@
   </style>
 </head>
 <body>
-  <h1>News Feed</h1>
-  <div id="news-container"></div>
+  <h1>Food Recipes</h1>
+  <div id="recipe-container"></div>
   
   <div id="pagination">
     <button id="prev-button" class="hidden">Previous</button>
@@ -31,13 +37,13 @@
 
   <script>
     let currentPage = 1;
-    const articlesPerPage = 10;
-    let totalArticles = 0;
+    const recipesPerPage = 5; 
+    let totalRecipes = 0;
     let totalPages = 0;
 
-    
-    function fetchNews(page) {
-      const url = `https://your-news-url.com/api/news?page=${page}&limit=${articlesPerPage}`; // Replace with actual URL
+   
+    function fetchRecipes(page) {
+      const url = `https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood`;
 
       fetch(url)
         .then(response => {
@@ -47,26 +53,34 @@
           return response.json();
         })
         .then(data => {
-          totalArticles = data.total; // Assuming the API returns the total articles
-          totalPages = Math.ceil(totalArticles / articlesPerPage);
+          totalRecipes = data.meals.length; 
+          totalPages = Math.ceil(totalRecipes / recipesPerPage);
 
-          displayArticles(data.articles); // Assuming articles are in 'data.articles'
+          const start = (page - 1) * recipesPerPage;
+          const end = start + recipesPerPage;
+          const recipesToShow = data.meals.slice(start, end);
+
+          displayRecipes(recipesToShow);
           updatePaginationButtons();
         })
         .catch(error => {
-          console.error('Error fetching the news:', error);
+          console.error('Error fetching the recipes:', error);
         });
     }
 
-   
-    function displayArticles(articles) {
-      const newsContainer = document.getElementById('news-container');
-      newsContainer.innerHTML = ''; 
+    
+    function displayRecipes(recipes) {
+      const recipeContainer = document.getElementById('recipe-container');
+      recipeContainer.innerHTML = ''; 
 
-      articles.forEach(article => {
-        const articleDiv = document.createElement('div');
-        articleDiv.innerHTML = `<h2>${article.title}</h2><p>${article.description}</p>`;
-        newsContainer.appendChild(articleDiv);
+      recipes.forEach(recipe => {
+        const recipeDiv = document.createElement('div');
+        recipeDiv.classList.add('recipe-card');
+        recipeDiv.innerHTML = `
+          <h2>${recipe.strMeal}</h2>
+          <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+        `;
+        recipeContainer.appendChild(recipeDiv);
       });
     }
 
@@ -79,24 +93,24 @@
       nextButton.classList.toggle('hidden', currentPage === totalPages);
     }
 
-
+   
     document.getElementById('next-button').addEventListener('click', () => {
       if (currentPage < totalPages) {
         currentPage++;
-        fetchNews(currentPage);
+        fetchRecipes(currentPage);
       }
     });
 
     document.getElementById('prev-button').addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
-        fetchNews(currentPage);
+        fetchRecipes(currentPage);
       }
     });
 
     
     window.onload = function() {
-      fetchNews(currentPage);
+      fetchRecipes(currentPage);
     };
   </script>
 </body>

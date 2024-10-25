@@ -21,17 +21,13 @@
   <script>
     document.getElementById("fetchBtn").addEventListener("click", function() {
       const responseDiv = document.getElementById("response");
-
       
-      const serverUrl = "https://your-server-url.com/api/data";
+      const serverUrl = "https://www.themealdb.com/api.php";
 
-      
       fetch(serverUrl)
         .then(response => {
-         
           responseDiv.innerHTML = `Response Status: ${response.status}`;
-
-        
+          
           if (response.ok) {
             responseDiv.innerHTML += "<br>Successful AJAX request";
           } else {
@@ -39,7 +35,6 @@
           }
         })
         .catch(error => {
-          
           responseDiv.innerHTML = "Request failed, check internet connectivity.";
         });
     });
